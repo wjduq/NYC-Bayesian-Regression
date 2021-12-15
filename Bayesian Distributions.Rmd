@@ -47,7 +47,7 @@ bernoulli_likelihood <- function(theta, data) {
 ```
 
 
-Example: Prior based on a relatively small sample size (Not enough to shift postier)
+Example: Prior based on a relatively small sample size (Not enough to shift posterior)
 ```{r}
 n <- 12
 z <- 9
@@ -79,6 +79,7 @@ d %>%
 ```
 
 
+Example: Prior based on a relatively large sample size (Shifts posterior)
 ```{r}
 n <- 12
 z <- 9
