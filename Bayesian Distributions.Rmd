@@ -1,0 +1,111 @@
+==---
+title: "Bayesian Distributions"
+author: "William Duquette"
+date: "12/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(car)
+require(lattice)
+library(HH)
+require(mosaic)
+require(ggplot2)
+require(tidyverse)
+require(EnvStats)
+require(MASS)
+library(MuMIn)
+require(gridExtra)
+require(Hmisc)
+library(expss)
+library(ResourceSelection)
+require(effsize)
+library(asbio)
+library(Stat2Data)
+require(dplyr)
+require(fBasics)
+require(nortest)
+library(lmtest)
+library(nlme)
+library(sandwich)
+require(agricolae)
+require(DescTools)
+require(BSDA)
+```
+
+
+```{r}
+bernoulli_likelihood <- function(theta, data) {
+  
+  # theta = ranging from 0 to 1
+  # data  = the vector of data
+  n <- length(data)
+  z <- sum(data)
+  return(theta^z * (1 - theta)^(n - sum(data)))
+  
+  }
+```
+
+
+Example: Prior based on a relatively small sample size (Not enough to shift postier)
+```{r}
+n <- 12
+z <- 9
+a <- 2
+b <- 10
+
+trial_data <- c(rep(0, times = n - z), rep(1, times = z))
+
+d <-tibble(theta = seq(from = 0, to = 1, length.out = 100)) %>% 
+  mutate(`Prior (beta)` = dbeta(theta, shape1 = a, shape2 = b),
+         `Likelihood (Bernoulli)` = bernoulli_likelihood(theta = theta, data  = trial_data),
+         `Posterior (beta)`= dbeta(theta, shape1 = z+a, shape2 = n-z+b))
+```
+
+
+```{r}
+d %>% 
+  gather(key, value, -theta) %>% 
+  mutate(key = factor(key, levels = c("Prior (beta)", "Likelihood (Bernoulli)", "Posterior (beta)"))) %>% 
+  
+  ggplot(aes(x = theta)) +
+  # densities
+  geom_ribbon(aes(ymin = 0, ymax = value),
+              fill = "blue") +
+  labs(x = expression(theta),
+       y = NULL) +
+  facet_wrap(~key, scales = "free_y", ncol = 1) +
+  theme(panel.grid = element_blank())
+```
+
+
+```{r}
+n <- 12
+z <- 9
+a <- 21
+b <- 99
+
+trial_data <- c(rep(0, times = n - z), rep(1, times = z))
+
+d <-tibble(theta = seq(from = 0, to = 1, length.out = 100)) %>% 
+  mutate(`Prior (beta)` = dbeta(theta, shape1 = a, shape2 = b),
+         `Likelihood (Bernoulli)` = bernoulli_likelihood(theta = theta, data  = trial_data),
+         `Posterior (beta)`= dbeta(theta, shape1 = z+a, shape2 = n-z+b))
+```
+
+
+```{r}
+d %>% 
+  gather(key, value, -theta) %>% 
+  mutate(key = factor(key, levels = c("Prior (beta)", "Likelihood (Bernoulli)", "Posterior (beta)"))) %>% 
+  
+  ggplot(aes(x = theta)) +
+  # densities
+  geom_ribbon(aes(ymin = 0, ymax = value),
+              fill = "blue") +
+  labs(x = expression(theta),
+       y = NULL) +
+  facet_wrap(~key, scales = "free_y", ncol = 1) +
+  theme(panel.grid = element_blank())
+```
+
